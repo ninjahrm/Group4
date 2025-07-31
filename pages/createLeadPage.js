@@ -9,13 +9,13 @@ const { time } = require( "console" );
       this.loginButton = 'button[type="submit"]';
         this.Leadstab = 'a[href="/leads"]';
         this.createLead = 'button[class="btn btn-info"]';
-        this.leadName = 'input[name="name"]';
-        this.company =  'input[name="company"]';
+        this.leadName = '[name="name"]';
+        this.company =  '[name="company"]';
         this.leadSource = '[name="leadSource"]';
         this.industry = '[name="industry"]';
         this.annualRevenue = '[name="annualRevenue"]';
         this.noOfEmployees = '[name="noOfEmployees"]';
-        this.phoneNo = 'input[name="phone"]';
+        this.phoneNo = '[name="phone"]';
         this.email =  '[name="email"]';
         this.secondEmail =  '[name="secondaryEmail"]' ;
         this.leadStatus =  '[name="leadStatus"]' ;
@@ -78,11 +78,48 @@ async clickCreateLeadButton(){
         //await this.submit();
 
     }    
+    async createLeadwithManDetails(leadData){
+       // await this.page.click(this.Leadstab);
+        await this.page.fill(this.leadName, leadData.name);
+        await this.page.fill(this.company, leadData.company);
+        
+        await this.page.fill(this.industry, leadData.industry);
+        await this.page.fill(this.leadSource, leadData.leadSource);
+        await this.page.fill(this.phoneNo, leadData.phoneNo);
+        await this.page.fill(this.leadStatus, leadData.leadStatus);
+        const [popup] =await Promise.all([this.page.context().waitForEvent('page'),this.page.click(this.campaignPlus)]);
+        await popup.waitForLoadState();
+        await popup.click(this.campaignSelect);
+
+        //await this.page.locator(this.campaignSelect);
+        await popup.close;
+        
+
+    }
+    async createLeadwithblankCampaignDetails(leadData){
+       // await this.page.click(this.Leadstab);
+        await this.page.fill(this.leadName, leadData.name);
+        await this.page.fill(this.company, leadData.company);
+        
+        await this.page.fill(this.industry, leadData.industry);
+        await this.page.fill(this.leadSource, leadData.leadSource);
+        await this.page.fill(this.phoneNo, leadData.phoneNo);
+        await this.page.fill(this.leadStatus, leadData.leadStatus);
+       /* const [popup] =await Promise.all([this.page.context().waitForEvent('page'),this.page.click(this.campaignPlus)]);
+        await popup.waitForLoadState();
+        await popup.click(this.campaignSelect);
+
+        //await this.page.locator(this.campaignSelect);
+        await popup.close;*/
+        
+
+    }
     async goto(url) {
       await this.page.goto(url);
       await this.page.waitForLoadState('networkidle');
       return await this.page.url();
     }
+    
   
 async login(username, password) {
       
@@ -91,9 +128,26 @@ async login(username, password) {
     await this.page.click(this.loginButton);
 
 }
+async getFieldValidationMessage(fieldName) {
+
+    return await this.page.evaluate((name) => {
+        const el = document.querySelector(`[name="${name}"]`);
+    return el ? el.validationMessage : 'Field not found';
+    }, fieldName);
+}
 async clickCreateLead(){
     await this.page.click(this.createLead)
 }
+async getCampaignAlert() {
+     await this.clickCreateLeadButton();
+   this.page.on('dialog', async dialog => {
+  console.log('Alert message:', dialog.message());
+  await dialog.accept(); // or dialog.dismiss() if needed
+  
+    });
+
+}
+
   
 }
 

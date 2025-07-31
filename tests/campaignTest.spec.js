@@ -37,6 +37,7 @@ test('create campaign with Empty Campaign Name fields', async ({ page }) => {
   expect(campaignNameValidation).toContain(testData.campaigns[2].expectedValidationMessage);
 });
 
+<<<<<<< Updated upstream
 test('create campaign with Empty Target Size fields', async ({ page }) => {
   await CampaignPage.clickCampaignsTab();
   await CampaignPage.clickCreateCampaign();
@@ -45,6 +46,14 @@ test('create campaign with Empty Target Size fields', async ({ page }) => {
   const campaignNameValidation = await CampaignPage.getFieldValidationMessage(testData.campaigns[3].expectedValidationField);
   expect(campaignNameValidation).toContain(testData.campaigns[3].expectedValidationMessage);
 });
+=======
+    await CampaignPage.clickCampaignsTab();
+    await CampaignPage.clickCreateCampaign();
+    await CampaignPage.createCampaignWithAllFields(testData.campaign);
+    await CampaignPage.clickCreateCampaignButton();
+    
+    await expect(page).toHaveURL(testData.URLs.successLeadCreationURL);
+>>>>>>> Stashed changes
 
 test('create campaign with Negative Target Size', async ({ page }) => {
   await CampaignPage.clickCampaignsTab();

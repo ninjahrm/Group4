@@ -1,4 +1,8 @@
+<<<<<<< Updated upstream
 class LoginPage {
+=======
+class loginPage {
+>>>>>>> Stashed changes
   constructor(page) {
     this.page = page;
   }
@@ -41,4 +45,8 @@ class LoginPage {
 
 }
 
+<<<<<<< Updated upstream
 module.exports = { LoginPage };
+=======
+module.exports = { loginPage };
+>>>>>>> Stashed changes
