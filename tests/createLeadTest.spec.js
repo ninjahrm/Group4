@@ -18,7 +18,10 @@ const CreateLeadPage= new createLeadPage(page);
 
     await CreateLeadPage.createLeadwithManDetails(leadData.leadCreationwithMandotoryfields);
     await CreateLeadPage.clickCreateLeadButton();
+<<<<<<< Updated upstream
     console.log('Lead creation test completed');
+=======
+>>>>>>> Stashed changes
     page.setDefaultTimeout(60000); 
     await expect(page).toHaveURL(leadData.URLs.successLeadCreationURL);
 }
