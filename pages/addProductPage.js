@@ -4,6 +4,7 @@ import { testdata, productTestcases,productTestcasesduplicatevalidation } from '
 
 
 class addProductPage {
+
     
 
     constructor(page) {
