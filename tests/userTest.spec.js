@@ -335,7 +335,7 @@ test.describe('Password field validations', () => {
   });
 });
 
-test.describe.serial.only('User Flow: Create → Verify → Delete', () => { 
+test.describe.serial('User Flow: Create → Verify → Delete', () => { 
      
      const userNameUsed = fullNameData[0].fieldValue;
 
