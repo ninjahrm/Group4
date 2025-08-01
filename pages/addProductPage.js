@@ -5,7 +5,8 @@ import { testdata, productTestcases,productTestcasesduplicatevalidation } from '
 
 class addProductPage {
 
-    
+
+
 
     constructor(page) {
         this.page = page;
@@ -82,7 +83,7 @@ class addProductPage {
             await this.page.selectOption(this.fieldSelectorMap.SelectVendor, { label: SelectVendor })
         }
 
-
+    }
     async userclickonaddbutton() {
         await this.page.click(this.fieldSelectorMap.AddButton)
     }
