@@ -1,36 +1,15 @@
 class salesOrderPage {
   constructor(page) {
     this.page = page;
-    //this.salesOrderButton = 'a[href*="Sales Order"]';
-    this.salesOrderButton = 'text=Sales Order';
-    this.createOrderButton = 'text=Create Order';
-    this.subject = 'input[name="subject"]';
-    this.validTill = 'input[type="date"]';
-    this.status = 'input[name="status"]';
-    this.opportunity = '(//button[@class="action-button"])[1]';
-    this.quote = '(//button[@class="action-button"])[2]';
-    this.contact = '(//button[@class="action-button"])[3]';
+    this.salesOrderButton = this.page.locator('text=Sales Order');
+    this.createOrderButton = this.page.locator('text=Create Order');
+    this.subject = this.page.locator('input[name="subject"]');
+    this.validTill = this.page.locator('input[type="date"]');
+    this.status = this.page.locator('input[name="status"]');
+    this.opportunity = this.page.locator('(//button[@class="action-button"])[1]');
+    this.quote = this.page.locator('(//button[@class="action-button"])[2]');
+    this.contact = this.page.locator('(//button[@class="action-button"])[3]');
     //this.billingAddress = page.locator('//label[text()="Billing Address"]/../textarea'); // If both label and text area embedded under one div tag, you can use this
-    /* this.billingAddress = page.locator('//label[text()="Billing Address"]/following-sibling::textarea');   
-    this.billingPOBox = page.locator('//label[text()="Billing PO Box"]//following-sibling::input');
-    this.billingCity= '//label[text()="Billing City"]//following-sibling::input';
-    this.billingState = '//label[text()="Billing State"]//following-sibling::input';
-    this.billingPostalCode = '//label[text()="Billing Postal Code"]//following-sibling::input';
-    this.billingCountry = '//label[text()="Billing Country"]//following-sibling::input';
-    this.shippingAddress = '//label[text()="Shipping Address"]//following-sibling::input';;
-    this.shippingPOBox= page.locator('//label[text()="Shipping PO Box"]//following-sibling::input');
-    this.shippingCity = '//label[text()="City"]//following-sibling::input';
-    this.shippingState = '//label[text()="State"]//following-sibling::input';
-    this.shippingPostalCode = '//label[text()="Postal Code"]//following-sibling::input';
-    this.shippingCountry= '//label[text()="Country"]//following-sibling::input';
-    this.product = '(//button[@class="action-button"])[4]';
-    this.quantity = '//label[text()="Quantity:"]/following-sibling::input[@type="number"]';
-    this.discount= page.locator('//label[text()="Discount in $ (-):"]/../input');
-    this.shippingCharges= page.locator('//label[text()="Shipping and Handling Charges in $ (+):"]/../input');
-    this.createSalesOrderBtn = 'button[type=submit]';
- */
-
-
 
     // Billing
     this.billingAddress = page.locator('//label[text()="Billing Address"]/following-sibling::textarea');
@@ -59,37 +38,70 @@ class salesOrderPage {
     // Submit
     this.createSalesOrderBtn = page.locator('button[type=submit]');
 
-    // Error message locator (common selector)
-    this.errorMessages = page.locator('.error');
+    // For toast message text
+    //this.toastMessage = page.locator('[role="alert"].Toastify__toast-body');
+    this.toastMessage = this.page.locator('div[role="alert"]'); // simpler locator
 
-    }
+
+  }
+
+  // 🔁 Map field name to locator (Generic helper)
+  getLocatorForField(fieldName) {
+    const fieldMap = {
+      subject: this.subject,
+      validTill: this.validTill,
+      status: this.status,
+      opportunity: this.opportunity,
+      quote: this.quote,
+      contact: this.contact,
+      billingAddress: this.billingAddress,
+      billingPOBox: this.billingPOBox,
+      billingCity: this.billingCity,
+      billingState: this.billingState,
+      billingPostalCode: this.billingPostalCode,
+      billingCountry: this.billingCountry,
+      shippingAddress: this.shippingAddress,
+      shippingPOBox: this.shippingPOBox,
+      shippingCity: this.shippingCity,
+      shippingState: this.shippingState,
+      shippingPostalCode: this.shippingPostalCode,
+      shippingCountry: this.shippingCountry,
+      quantity: this.quantity,
+      discount: this.discount,
+      shippingCharges: this.shippingCharges,
+    };
+
+    return fieldMap[fieldName];
+  }
 
   async navigateToSalesOrderPage() {
-    await this.page.click(this.salesOrderButton);
-    await this.page.click(this.createOrderButton);
+    await this.salesOrderButton.click();
+    await this.createOrderButton.click();
     await this.page.waitForLoadState('networkidle'); // Optional: wait for page load
   }
+
   async enterSubject(text) {
-    await this.page.fill(this.subject, text);
+    await this.subject.fill(text);   // <-- call fill on locator directly
   }
 
   async selectValidTillDate(date) {
-    await this.page.fill(this.validTill, date);
+    await this.validTill.fill(date);
   }
 
   async enterStatus(statusText) {
-    await this.page.fill(this.status, statusText);
+    await this.status.fill(statusText);
   }
 
   async submitForm() {
-    await this.page.click('button[type="submit"]'); // Adjust as needed
+    await this.page.click('button[type="submit"]'); // This is fine if you don't have a locator for submit button
   }
 
   async selectOpportunity(opportunityName) {
     // Click the lookup icon to open the popup
     const [popup] = await Promise.all([
       this.page.waitForEvent('popup'),
-      this.page.click(this.opportunity), // (//button[@class="action-button"])[1]
+      //this.page.click(this.opportunity), // (//button[@class="action-button"])[1]
+      this.opportunity.click()
     ]);
 
     await popup.waitForLoadState('domcontentloaded');
@@ -136,7 +148,8 @@ class salesOrderPage {
     // Click the lookup icon to open the popup
     const [popup] = await Promise.all([
       this.page.waitForEvent('popup'),
-      this.page.click(this.quote), // (//button[@class="action-button"])[2]
+      //this.page.click(this.quote), // (//button[@class="action-button"])[2]
+      this.quote.click()
     ]);
 
     await popup.waitForLoadState('domcontentloaded');
@@ -183,7 +196,8 @@ class salesOrderPage {
     // Click the lookup icon to open the popup
     const [popup] = await Promise.all([
       this.page.waitForEvent('popup'),
-      this.page.click(this.contact), // (//button[@class="action-button"])[3]
+      //this.page.click(this.contact), // (//button[@class="action-button"])[3]
+      this.contact.click()
     ]);
 
     await popup.waitForLoadState('domcontentloaded');
@@ -276,17 +290,16 @@ class salesOrderPage {
     await this.shippingCountry.fill(country);
   }
 
-  // Product selection
- /*  async clickProductLookup() {
-    await this.productButton.click();
-    // Handle the popup in another method (if needed)
-  } */
+  async getToastMessageText() {
+    await this.toastMessage.waitFor({ state: 'visible', timeout: 60000 }); // 60s timeout  // wait for toast to appear
+    return (await this.toastMessage.textContent()).trim();
+  }
 
   async selectProduct(productName) {
     // Click the lookup icon to open the popup
     const [popup] = await Promise.all([
       this.page.waitForEvent('popup'),
-      this.productButton.click(), // (//button[@class="action-button"])[4]
+      this.productButton.click(), // (//button[@class="action-button"])[4]      
     ]);
 
     await popup.waitForLoadState('domcontentloaded');
@@ -329,8 +342,6 @@ class salesOrderPage {
     }
   }
 
-
-
   async enterQuantity(value) {
     await this.quantity.fill(value);
   }
@@ -352,8 +363,50 @@ class salesOrderPage {
   async getErrorText() {
     return this.errorMessages;
   }
-  
+
+  //Overrides method
+  async fillValidSalesOrderData(overrides = {}) {
+    await this.page.waitForLoadState('domcontentloaded'); // or 'networkidle'
+    await this.subject.fill(overrides.subject ?? 'Test Order');
+    await this.validTill.fill(overrides.validTill ?? '2027-07-31');
+    await this.status.fill(overrides.status ?? 'Open');
+
+    // For buttons, use click()
+    /* await this.opportunity.click();
+    await this.quote.click();
+    await this.contact.click(); */
+
+    await this.billingAddress.fill(overrides.billingAddress ?? '123 Main St');
+    await this.billingPOBox.fill(overrides.billingPOBox ?? '45678');
+    await this.billingCity.fill(overrides.billingCity ?? 'Testville');
+    await this.billingState.fill(overrides.billingState ?? 'CA');
+    await this.billingPostalCode.fill(overrides.billingPostalCode ?? '123456');
+    await this.billingCountry.fill(overrides.billingCountry ?? 'USA');
+
+    await this.shippingAddress.fill(overrides.shippingAddress ?? '456 Market St');
+    await this.shippingPOBox.fill(overrides.shippingPOBox ?? '78912');
+    await this.shippingCity.fill(overrides.shippingCity ?? 'ShipCity');
+    await this.shippingState.fill(overrides.shippingState ?? 'NY');
+    await this.shippingPostalCode.fill(overrides.shippingPostalCode ?? '654321');
+    await this.shippingCountry.fill(overrides.shippingCountry ?? 'USA');
+
+    // Uncomment and update if you want to fill these fields and click productButton
+    // await this.productButton.click();
+    // await this.quantity.fill(overrides.quantity ?? '10');
+    // await this.discount.fill(overrides.discount ?? '5');
+    // await this.shippingCharges.fill(overrides.shippingCharges ?? '10');
+  }
+
+  async fillField(fieldName, inputValue) {
+    const locator = this.getLocatorForField(fieldName);
+    await locator.fill('');
+    await locator.type(inputValue, { delay: 50 }); // simulate user typing
+  }
+
+  async getFieldValue(fieldName) {
+    const locator = this.getLocatorForField(fieldName);
+    return await locator.inputValue();
+  }
 
 }
-
 module.exports = { salesOrderPage };
