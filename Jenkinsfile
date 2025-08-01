@@ -8,6 +8,7 @@ pipeline {
 
   environment {
     HOME = "${env.WORKSPACE}"
+    CI = 'true'
   }
 
   stages {
@@ -23,10 +24,16 @@ pipeline {
         bat 'npm run install:browsers'
       }
     }
+    stage('Clean Allure Results') {
+     steps {
+       bat 'rmdir /s /q allure-results' // Windows command to delete folder
+       bat 'mkdir allure-results'       // Recreate folder to avoid errors
+  }
+}
 
     stage('Run Tests') {
       steps {
-       bat 'npm run logintest'
+       bat 'npm run test'
       }
     }
 

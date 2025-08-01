@@ -49,7 +49,7 @@ test('create campaign with Empty Target Size fields', async ({ page }) => {
 test('create campaign with Negative Target Size', async ({ page }) => {
   await CampaignPage.clickCampaignsTab();
   await CampaignPage.clickCreateCampaign();
-  await CampaignPage.createCampaignWithFields(testData.campaigns[4]); // Assuming this is the 5th object
+  await CampaignPage.createCampaignWithFields(testData.campaigns[4]); 
   await CampaignPage.clickCreateCampaignButton();
   const targetSizeValidation = await CampaignPage.getFieldValidationMessage(testData.campaigns[4].expectedValidationField);
   expect(targetSizeValidation).toContain(testData.campaigns[4].expectedValidationMessage);
