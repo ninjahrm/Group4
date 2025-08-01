@@ -1,4 +1,8 @@
+import { faker } from '@faker-js/faker';
+
+
 export const validationURLs = {
+    createUserSuccess: 'http://49.249.28.218:8098/users',
     homePage : 'http://49.249.28.218:8098/dashboard',
     
 }
@@ -30,7 +34,7 @@ export const fieldNames = {
   
 export const fullNameData =[
    
-        { Name: 'Enter valid users full name',fieldValue: 'Sam John' ,error: ''},
+        { Name: 'Enter valid users full name',fieldValue: faker.person.fullName() ,error: ''},
         {  Name: 'Enter numbers for users full name',fieldValue: '1234' ,error: 'Please fill out this field.'},
         {  Name: 'Enter special chracter for users full name',fieldValue: '!@#' ,error: 'Please fill out this field.'},
         {  Name: 'Enter alphanumeric and special character for users full name',fieldValue: 'Sam1234!@#sam' ,error: ''},
@@ -43,7 +47,7 @@ export const fullNameData =[
 ];
 
 export const mobileNoData = [
-    { Name: 'Enter valid mobile number', fieldValue: '9876543210', error: '' },
+    { Name: 'Enter valid mobile number', fieldValue: faker.string.numeric(10), error: '' },
     { Name: 'Enter less than 10 digits mobile number', fieldValue: '123456789', error: '' },
     { Name: 'Enter more than 10 digits mobile number', fieldValue: '12345678901', error: '' },
     { Name: 'Enter alphabets for mobile number', fieldValue: 'abcde', error: 'Please fill out this field.' },
@@ -53,25 +57,10 @@ export const mobileNoData = [
     { Name: 'Enter blank spaces for mobile number', fieldValue: '       ', error: 'Please fill out this field.' },
 ];
 
-// export const emailData = [
-//     { Name: 'Enter valid email address', fieldValue: 'test123@qa.net', error: '' },
-//     { Name: 'Enter email address without @ symbol', fieldValue: 'test123qa.net', error: 'Please include an \'@\' in the email address. \'test123qa.net\' is missing an \'@\'.' },
-//     { Name: 'Enter email address without domain', fieldValue: 'test123@', error:"Please enter a part following '@'. 'test123@' is incomplete." },
-//     { Name: 'Enter email address without username', fieldValue: '@qa.com', error: "Please enter a part followed by '@'. '@qa.com' is incomplete." },
-//     { Name: 'Enter email address with invalid domain', fieldValue: 'test123@.123', error: "'.' is used at a wrong position in '.123'." },
-//     { Name: 'Enter email address with invalid TLD', fieldValue: 'test123    @qa.invalid', error: "A part followed by '@' should not contain the symbol ' '." },
-//     { Name: 'Enter email address with special characters after @', fieldValue: 'test123@!#qa.com', error: "A part following '@' should not contain the symbol '!'." },
-//     { Name: 'Enter valid email address with co.in',fieldValue:'test123@qa.co.IN',error:''},
-//     { Name: 'Enter email address with invalid characters', fieldValue: 'test123@qa. com', error: "A part following '@' should not contain the symbol ' '."  },
-//     { Name: 'Enter invalid email address', fieldValue: 'test123@qa', error: 'Please enter a valid email address' },
-//     { Name: 'Enter email address with special characters', fieldValue: 'test!@  qa.com', error: "A part following '@' should not contain the symbol ' '."  },
-//     { Name: 'Enter email address with spaces', fieldValue: 'test123 @qa.com', error: "A part followed by '@' should not contain the symbol ' '." },
-//     { Name: 'Email address is left blank', fieldValue: '', error: 'Please fill out this field.' },
-//     { Name: 'Enter blank spaces for email address', fieldValue: '       ', error: 'Please fill out this field.' },
-// ];     
+    
 
 export const emailData = [
-    { Name: 'Enter valid email address', fieldValue: 'test123@qa.net', error: '' },
+    { Name: 'Enter valid email address', fieldValue: faker.internet.email(), error: '' },
     { Name: 'Enter email address without @ symbol', fieldValue: 'test123qa.net', error: 'Please enter a valid email address' },
     { Name: 'Enter email address without domain', fieldValue: 'test123@', error: 'Please enter a valid email address' },
     { Name: 'Enter email address without username', fieldValue: '@qa.com', error: 'Please enter a valid email address' },
@@ -88,7 +77,7 @@ export const emailData = [
 ]; 
 
 export const usernameData = [
-    { Name: 'Enter valid username', fieldValue: 'testuser123', error: '' },
+    { Name: 'Enter valid username', fieldValue: faker.internet.userName(), error: '' },
     { Name: 'Enter username with special characters', fieldValue: 'test@user!', error: '' },
     { Name: 'Enter username with spaces', fieldValue: 'test user', error: 'Please enter a valid username' },
     { Name: 'Enter username with less than 3 characters', fieldValue: 'ab', error: 'Please lengthen this text to 6 characters or more' },

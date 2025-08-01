@@ -9,7 +9,7 @@ test.describe('NinjaHrm - Login validations', () => {
       const loginPage = new LoginPage(page);
       const actualUrl = await loginPage.goto(URLs.baseURL);
       // Validate the URL after navigation
-      expect(actualUrl).toMatch(expectedUrls.loginSuccess);
+      expect(actualUrl).toMatch(expectedUrls.loginPageDisplayed);
 
       // Perform login with each test data
       const errorMsg = await loginPage.login(data.username, data.password);
