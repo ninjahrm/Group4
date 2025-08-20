@@ -2,6 +2,7 @@ import { expect } from '@playwright/test';
 import { testdata, productTestcases,productTestcasesduplicatevalidation } from '../testdata/productData';
 
 
+import {testdata,productTestcases} from '../testdata/productData'
 
 class addProductPage {
 
@@ -69,6 +70,23 @@ class addProductPage {
         const { ProductName, SelectCategory, Quantity, PricePerUnit, SelectVendor } = data;
 
         await this.page.fill(this.fieldSelectorMap.ProductName, ProductName || '')
+    async userentervalidproductdetails(data){
+
+        //data restructuring ---  extracts values from the data object and assigns them to variables with the same names.
+        // || symbol is used after variables -- playwright may throw error if value is not empty -- 
+        //it helps to provide a well defined string if data is not provided
+        // //it is used mostly in data driven testing 
+
+        const {ProductName,SelectCategory,Quantity,PricePerUnit,SelectVendor} = data   // data restructuring
+        await this.page.fill(this.productName,ProductName || '')
+        await this.page.waitForTimeout(2000)
+        await this.page.selectOption(this.categoryDropdown,{label:SelectCategory || ''})
+        await this.page.waitForTimeout(2000)
+        await this.page.fill(this.quantity,Quantity || '')
+        await this.page.waitForTimeout(2000)
+        await this.page.fill(this.pricePerUnit,PricePerUnit || '')
+        await this.page.waitForTimeout(2000)
+        await this.page.selectOption( this.vendorDropdown,{label:SelectVendor || ''})
         await this.page.waitForTimeout(2000)
 
         // await this.page.locator(this.categoryDropdown).selectOption({label:testdata.proddata.SelectCategory})
@@ -263,6 +281,14 @@ class addProductPage {
         return currenturl.includes('/create-product')
     }
     //validate all fields are present in product page
+        
+
+    }
+
+    async userclicksaddbutton(){
+        await this.page.click(this.addButton)
+    }
+
     async validateAllFieldsArePresent() {
         const productTab = this.page.locator(this.fieldSelectorMap.ProductTab);
         await productTab.waitFor({ state: 'visible', timeout: 15000 });
