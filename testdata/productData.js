@@ -15,6 +15,52 @@ export const testdata = {
         prodpagesuccessurl:'http://49.249.28.218:8098/products'
     },
     validproddata:{
+        ProductName : 'Vivo X200 Pro',
+        SelectCategory:'Electronics',
+        Quantity:'5',
+        PricePerUnit:'550',
+        SelectVendor:''
+    },
+
+};
+
+export const productTestcases=[
+    {
+        name:'valid product details',
+        data:testdata.proddata,
+        expectError:false
+    },
+    {
+        name:'blank product name',
+        data:{...testdata.proddata,ProductName:''},
+        expectError:true
+    },
+    {
+        name : 'blank SelectCategory',
+        data:{...testdata.proddata,SelectCategory:''},
+        expectError:true
+    },
+    {
+         name : 'blank Quantity',
+        data:{...testdata.proddata,Quantity:''},
+        expectError:true
+
+    },
+    {
+        name : 'blank PricePerUnit',
+        data:{...testdata.proddata,PricePerUnit:''},
+        expectError:true
+
+    },
+    {
+        name : 'blank SelectVendor',
+        data:{...testdata.proddata,SelectVendor:''},
+        expectError:true
+
+    }  
+
+]
+    validproddata:{
         ProductName :  faker.commerce.productName(),
         SelectCategory:'Electronics',
         Quantity:'5',
