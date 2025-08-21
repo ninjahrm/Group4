@@ -12,6 +12,12 @@ pipeline {
   }
 
   stages {
+    stage('Cleanup Workspace') {
+      steps {
+        cleanWs()   // ensures old files are removed
+      }
+    }
+
     stage('Checkout') {
       steps {
         git url: 'https://github.com/ninjahrm/Group4.git', branch: 'main'
