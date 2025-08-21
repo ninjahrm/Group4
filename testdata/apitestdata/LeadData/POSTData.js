@@ -7,7 +7,7 @@ export const testLeadData = {
     campaignendpoint:'/campaign'
   },
   login: {
-    username: 'user10_vijay',
+    username: 'user11_vijay',
     password: '@123456'
   },
 
@@ -40,5 +40,51 @@ Leaddatapayload :{
   "rating": 8,
   "secondaryEmail": "alice.johnson@workmail.com",
   "website": "https://www.techsolutions.com"
+},
+leadSchema : {
+  type: "object",
+  properties: {
+    leadId: { type: "string" }, // usually returned by backend
+    address: { type: "string" },
+    annualRevenue: { type: "number" },
+    assignedTo: { type: "string" },
+    campaign: {
+      type: "object",
+      properties: {
+        campaignId: { type: "string" },
+        campaignName: { type: "string" },
+        campaignStatus: { type: "string" },
+        targetSize: { type: "number" },
+        expectedCloseDate: { type: "string" },
+        targetAudience: { type: "string" },
+        description: { type: "string" }
+      },
+      required: ["campaignId", "campaignName", "campaignStatus"]
+    },
+    city: { type: "string" },
+    company: { type: "string" },
+    country: { type: "string" },
+    description: { type: "string" },
+    email: { type: "string", format: "email" },
+    industry: { type: "string" },
+    leadSource: { type: "string" },
+    leadStatus: { type: "string" },
+    name: { type: "string" },
+    noOfEmployees: { type: "number" },
+    phone: { type: "string" },
+    postalCode: { type: "number" },
+    rating: { type: "number" },
+    secondaryEmail: { type: "string", format: "email" },
+    website: { type: "string" }
+  },
+  required: [
+    "leadId", 
+    "name", 
+    "company", 
+    "email", 
+    "campaign", 
+    "leadStatus"
+  ],
+  additionalProperties: true
 }
-}
+};
