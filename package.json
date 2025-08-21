@@ -18,13 +18,27 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "CRM project",
   "devDependencies": {
     "@faker-js/faker": "^9.9.0",
-    "@playwright/test": "^1.54.1",
+    "@playwright/test": "^1.54.2",
     "@types/node": "^24.0.14",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
     "allure-playwright": "^3.3.2"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ninjahrm/Group4.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ninjahrm/Group4/issues"
+  },
+  "homepage": "https://github.com/ninjahrm/Group4#readme",
+  "dependencies": {
+    "mysql2": "^3.14.3"
   }
 }
