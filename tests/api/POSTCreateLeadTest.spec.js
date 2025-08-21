@@ -1,4 +1,5 @@
 import{testLeadData} from '../../testdata/apitestdata/LeadData/POSTData'
+import { queryDB } from '../../utils/dbUtils';
 import Ajv from 'ajv';
 import addFormats from "ajv-formats";
 import { test, expect,request } from '@playwright/test'
@@ -26,6 +27,12 @@ data: testLeadData.Leaddatapayload
 expect(response.status()).toBe(201);
 const responseBody = await response.json();
 console.log(responseBody); // checks 2xx status
+
+expect(responseBody.name).toBe(testLeadData.Leaddatapayload.name);
+
+const dbData= await queryDB('SELECT * FROM lead where name= ?',[responseBody.name]);
+console.log("Test 1:Lead ID is",dbData[0].lead_id)
+console.log("Test 1 :ead name is",dbData[0].name)
 
 });
 
