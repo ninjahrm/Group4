@@ -13,7 +13,11 @@ export const userPostApiData ={
     },
     URLs: {
         baseurl: 'http://49.249.28.218:8098',
-        endpoint: '/admin/create-user'
+        endpoint: '/admin/create-user',
+        endpointget: 'admin/users',
+        endpointgetwpag: 'admin/users-paginated',
+        endpointcount: 'admin/users-count',
+        endpointdelete: 'admin/user'
     },
     extraHTTPHeaders: {
         'Content-Type': "application/json",

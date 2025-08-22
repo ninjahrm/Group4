@@ -1,6 +1,6 @@
 import { test, expect,request } from '@playwright/test'
-import { userPostApiData } from '../testdata/userPostApiData';
-import { queryDB } from '../testdata/dbUtils';
+import { userPostApiData } from '../../testdata/apitestdata/UserData/userPostApiData';
+import { queryDB } from '../../utils/dbUtils';
 test.describe('User API tests', () => {
 
 let apiContext;
