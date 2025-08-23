@@ -16,12 +16,14 @@ extraHTTPHeaders:userPostApiData.extraHTTPHeaders // Replace with actual base UR
 test('Create new user', async () => {
 
 console.log(userPostApiData.URLs.endpoint);
+console.log(userPostApiData.userCreationData);
 const response = await apiContext.post(userPostApiData.URLs.endpoint,
     {
         data: userPostApiData.userCreationData
     }
 );
-
+console.log(response.status());
+console.log(userPostApiData.userCreationData);
 expect(response.ok()).toBeTruthy(); // checks 2xx status
 const responseBody = await response.json();
 console.log(responseBody);
