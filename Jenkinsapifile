@@ -26,7 +26,9 @@ pipeline {
 
     stage('Install Dependencies') {
       steps {
+        
         bat 'npm ci'
+        
       }
     }
     stage('Clean Allure Results') {
