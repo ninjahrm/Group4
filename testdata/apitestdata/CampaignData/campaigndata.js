@@ -1,6 +1,11 @@
 export const apiData = {
     baseURL: 'http://49.249.28.218:8098',
     endpoint: '/campaign',
+    invalidEndpoint: '/camp', // wrong endpoint
+    allCampaignsEndpoint: '/campaign/all',
+    getAllCampaignsEndpoint: '/campaign/all',
+    getCampaignCountEndpoint: '/campaign/count',
+    getAllCampaignsNonPageableEndpoint: '/campaign/all-campaigns',
     basicAuth: {
         username: 'rmgyantra',
         password: 'rmgy@9999'
@@ -112,8 +117,6 @@ export const apiData = {
         postCampaigns: [
         {
             testName: 'POST with invalid endpoint',
-            endpoint: '/camp', // wrong endpoint
-            
             campaignId: 'Camp_08',
             campaignName: 'Summer sale',
             campaignStatus: 'Active',
@@ -125,7 +128,6 @@ export const apiData = {
         },
         {
             testName: 'POST with invalid HTTP method',
-            
             campaignId: 'camp_05',
             campaignName: 'Summer sale',
             campaignStatus: 'Active',
@@ -169,7 +171,38 @@ export const apiData = {
             targetAudience: 'Customers',
             targetSize: 1000,
             expectedStatus: 200
+        },
+        {
+            testName: 'Update with invalid campaign name (empty)',
+            campaignName: '',
+            campaignStatus: 'Active',
+            description: 'Updated campaign with empty name',
+            expectedCloseDate: '2026-12-15',
+            targetAudience: 'Customers',
+            targetSize: 1000,
+            expectedStatus: 400
+        },
+        {
+            testName: 'Update with invalid target size (negative)',
+            campaignName: 'Winter Sale',
+            campaignStatus: 'Active',
+            description: 'Updated campaign with negative target size',
+            expectedCloseDate: '2026-12-15',
+            targetAudience: 'Customers',
+            targetSize: -100,
+            expectedStatus: 400
+        },
+        {
+            testName: 'Update with invalid date format',
+            campaignName: 'Winter Sale',
+            campaignStatus: 'Active',
+            description: 'Updated campaign with invalid date format',
+            expectedCloseDate: '15-12-2026',
+            targetAudience: 'Customers',
+            targetSize: 1000,
+            expectedStatus: 400
         }
+
 
     ]
 };
