@@ -7,14 +7,14 @@ export const testLeadData = {
     campaignendpoint:'/campaign'
   },
   login: {
-    username: 'user11_vijay',
+    username: 'user16_vijay',
     password: '@123456'
   },
 
 Leaddatapayload :{
   "address": "1345 Main Street",
   "annualRevenue": 5000000,
-  "assignedTo": "John Doeling",
+  "assignedTo": "John Ding",
   "campaign": {
     "campaignId": "CAM07703",
     "campaignName": "camp123",
@@ -41,6 +41,40 @@ Leaddatapayload :{
   "secondaryEmail": "alice.johnson@workmail.com",
   "website": "https://www.techsolutions.com"
 },
+
+UpdateLeadpayload:{
+    
+  "address": "456 Oak Avenue",
+  "annualRevenue": 7500000,
+  "assignedTo": "Jane Smith",
+  "campaign": {
+    "campaignId": "CAM07703",
+    "campaignName": "camp123",
+    "campaignStatus": "active",
+    "targetSize": 23,
+    "expectedCloseDate": "01-09-2025",
+    "targetAudience": "students",
+    "description": "abcwertt"
+
+  },
+  "city": "San Francisco",
+  "company": "Innovatech Corp",
+  "country": "Canada",
+  "description": "Prospective partner for tech collaboration",
+  "email": "partner@innovatech.ca",
+  "industry": "Software",
+  "leadSource": "Referral",
+  "leadStatus": "In Progress",
+  "name": "Robert Williams",
+  "noOfEmployees": 120,
+  "phone": "+1-604-987-6543",
+  "postalCode": 99990,
+  "rating": 5,
+  "secondaryEmail": "robert.williams@innovatech.ca",
+  "website": "https://www.innovatech.ca"
+
+},
+
 leadSchema : {
   type: "object",
   properties: {
