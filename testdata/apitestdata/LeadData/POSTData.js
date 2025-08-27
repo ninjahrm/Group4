@@ -3,7 +3,9 @@ export const testLeadData = {
 
   URLs: {
     url: 'http://49.249.28.218:8098',
+    invalidurl:'http://49.249.28.218:8068',
     leadendpoint:'/lead',
+    leadinvalidendpoint:'/leadss',
     campaignendpoint:'/campaign'
   },
   login: {
@@ -40,6 +42,25 @@ Leaddatapayload :{
   "rating": 8,
   "secondaryEmail": "alice.johnson@workmail.com",
   "website": "https://www.techsolutions.com"
+},
+
+mandatoryfields:{
+    "campaign": {
+    "campaignId": "{{campaignId}}",
+    "campaignName": "Summer Sales Campaign",
+    "campaignStatus": "Active",
+    "description": "Campaign to boost summer product sales",
+    "expectedCloseDate": "2025-12-31",
+    "targetAudience": "Retail Customers",
+    "targetSize": 200
+  },
+  "company": "Tekark Solutions Inc",
+  "industry": "Technology",
+  "leadSource": "Web",
+  "leadStatus": "New",
+  "name": "Alice Johnson",
+  "phone": "+1-555-123-4568"
+
 },
 
 UpdateLeadpayload:{
