@@ -1,217 +1,367 @@
-import{testLeadData} from '../../testdata/apitestdata/LeadData/POSTData'
+import { testLeadData } from '../../testdata/apitestdata/LeadData/POSTData'
 import { queryDB } from '../../utils/dbUtils';
+import { getLeadPayload } from '../../utils/payloadLeadHelper';
+
+
 import Ajv from 'ajv';
 import addFormats from "ajv-formats";
-import { test, expect,request} from '@playwright/test'
+import { test, expect, request } from '@playwright/test'
 const ajv = new Ajv();
 addFormats(ajv);  //enable email, uri, date-time etc.
 
-test.describe('User API tests', () => {
-let lead_Id;
-let apiContext;
+test.describe('API Lead tests', () => {
+    let lead_Id;
+    let apiContext;
+    let dup_email;
+    let dup_phone;
+    let dup_secondaryemail
+    let dup_company
+    let dup_leadname
 
-test.beforeAll(async ({playwright}) => {
-apiContext = await request.newContext({
-baseURL: testLeadData.URLs.url, // Replace with actual base URL
-extraHTTPHeaders: {
-'Content-Type': 'application/json',
-'Authorization': 'Basic ' + Buffer.from(`${testLeadData.login.username}:${testLeadData.login.password}`).toString('base64') // if API is secured
-}
-});
-//creating lead in before all to pass leadid across the tests
-const response = await apiContext.post('/lead?campaignId=CAM07703', {
-      data: testLeadData.Leaddatapayload
-    });
-    expect(response.status()).toBe(201);
+    test.beforeAll(async ({ playwright }) => {
+        apiContext = await request.newContext({
+            baseURL: testLeadData.URLs.url, // Replace with actual base URL
+            extraHTTPHeaders: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Basic ' + Buffer.from(`${testLeadData.login.username}:${testLeadData.login.password}`).toString('base64') // if API is secured
+            }
+        });
+        //create new lead
+        const response = await apiContext.post('/lead?campaignId=CAM07703', {
+            data: testLeadData.Leaddatapayload
+        });
+        expect(response.status()).toBe(201);
 
-    const body = await response.json();
-    lead_Id = body.leadId;
-    console.log("Lead created in beforeAll:", lead_Id);
+        const body = await response.json();
+        lead_Id = body.leadId;
+        dup_email = body.email;
+        dup_phone = body.phone;
+        dup_secondaryemail = body.secondaryEmail;
+        dup_company = body.company;
+        dup_leadname = body.name
 
-});
+        console.log("Lead created in beforeAll:", lead_Id);
 
-//Create --- POST Lead
-test('Verify lead is created  with valid data in all fields and validate in db', async () => {
+    })
 
-const response = await apiContext.post('/lead?campaignId=CAM07703', {
-data:testLeadData.Leaddatapayload
-    
-});
-expect(response.status()).toBe(201);
-const responseBody = await response.json();
-console.log(responseBody); // checks 2xx status
+    //Create --- POST Lead
+    test('Verify lead is created  with valid data in all fields and validate in db', async () => {
 
+        const response = await apiContext.post(`${testLeadData.URLs.leadendpoint}?campaignId=${testLeadData.Leaddatapayload.campaign.campaignId}`, {
+            data: testLeadData.Leaddatapayload
 
-expect(responseBody.name).toBe(testLeadData.Leaddatapayload.name);
-
-const dbData= await queryDB('SELECT * FROM lead where name= ?',[responseBody.name]);
-
-console.log("Test 1:Lead ID is",dbData[0].lead_id)
-console.log("Test 1 :Lead name is",dbData[0].name)
-
-});
+        });
+        expect(response.status()).toBe(201);
+        const responseBody = await response.json();
+        console.log(responseBody); // checks 2xx status
 
 
+        expect(responseBody.name).toBe(testLeadData.Leaddatapayload.name);
 
-test('Verify lead is created with valid data in all fields  and validate schema', async () => {
-const response = await apiContext.post(`/lead?campaignId=${testLeadData.Leaddatapayload.campaign.campaignId}`, {
-data: testLeadData.Leaddatapayload
-   
-});
-expect(response.status()).toBe(201);
-const responseBody = await response.json();
-console.log(responseBody); // checks 2xx status
-const validate = ajv.compile(testLeadData.leadSchema);
-    const valid = validate(responseBody);
-    expect(valid, JSON.stringify(validate.errors, null, 2)).toBeTruthy();
-});
+        const dbData = await queryDB('SELECT * FROM lead where name= ?', [responseBody.name]);
 
-//Update -- PUT Lead
+        console.log("Test 1:Lead ID is", dbData[0].lead_id)
+        console.log("Test 1 :Lead name is", dbData[0].name)
 
-    
-   test('Verify lead is updated with valid data in all fields', async () => {
-  // 🔹 Ensure lead_Id is available
-  if (!lead_Id) {
-    throw new Error("lead_Id is undefined. Make sure a lead is created before running this test.");
-  }
-  console.log("Updating lead with ID:", lead_Id);
 
-  // 🔹 Call the API to update lead
-  const response = await apiContext.put(
-    `/lead?campaignId=${testLeadData.Leaddatapayload.campaign.campaignId}&leadId=${lead_Id}`,
-    { data: testLeadData.UpdateLeadpayload }
-  );
 
-  expect(response.status()).toBe(200);
-
-  const updateResponseBody = await response.json();
-  console.log("API Response after update:", updateResponseBody);
-
-  // 🔹 Guard against missing fields
-  if (!updateResponseBody.name || !updateResponseBody.leadId) {
-    throw new Error("API response missing leadId or name");
-  }
-
-  // 🔹 Fetch the updated lead from DB
-  const dbData = await queryDB(
-    'SELECT * FROM lead WHERE lead_id = ?',
-    [updateResponseBody.leadId]   // map API leadId to DB lead_id
-  );
-
-  if (!dbData || dbData.length === 0) {
-    throw new Error(`No lead found in DB with lead_id=${updateResponseBody.leadId}`);
-  }
-
-  console.log("DB Row after update:", dbData[0]);
-
-  // 🔹 Assertions: API response matches DB
-  expect(updateResponseBody.leadId).toBe(dbData[0].lead_id);
-  expect(updateResponseBody.name).toBe(dbData[0].name);
-});
-
-//get count of all leads
-test('get the count of all leads',async()=>{
-    //getting count before lead creation
-    const dbbefore=await queryDB('select count(*) AS count_lead from lead')
-    const dbcountbefore=dbbefore[0].count_lead;
-
-    //create new lead
-
-    const responsecreate=await apiContext.post('/lead?campaignId=CAM07703', {
-        data:testLeadData.Leaddatapayload
     });
 
-    expect(responsecreate.status()).toBe(201)
 
-    //get count from api
-     const response=await apiContext.get('/lead/count')
-     const countafterapi=await response.json()  
-     console.log("the count of leads =",countafterapi) 
 
-    //checking in DB
-    const dbafter=await queryDB('select count(*) AS count_lead from lead')
-    const dbcountafter=dbafter[0].count_lead;
 
-     //validating with database
-     
-     expect(dbcountafter).toBe(countafterapi)
-})
 
-//get list  of all leads without pagination
+    test('Verify lead is created with valid data in all fields  and validate schema', async () => {
+        const response = await apiContext.post(`${testLeadData.URLs.leadendpoint}?campaignId=${testLeadData.Leaddatapayload.campaign.campaignId}`, {
+            data: testLeadData.Leaddatapayload
 
-test('Get the list of all leads and Verify all the fields in lead module in json format are present',async()=>{
+        });
+        expect(response.status()).toBe(201);
+        const responseBody = await response.json();
+        console.log(responseBody); // checks 2xx status
+        const validate = ajv.compile(testLeadData.leadSchema);
+        const valid = validate(responseBody);
+        expect(valid, JSON.stringify(validate.errors, null, 2)).toBeTruthy();
+    });
 
-    const response= await apiContext.get('/lead/all-leads')
-    const getallresponsebody=await response.json();
-    
-    let expectedfields=["address","annualRevenue","assignedTo","campaign","city","company","country","description",
-        "email","industry","leadId","leadSource","leadStatus","name","noOfEmployees","phone","postalCode","rating","secondaryEmail","website"]
+    test('Verify lead is created with valid data in all fields with mandatory fields only', async () => {
+        const response = await apiContext.post(`${testLeadData.URLs.leadendpoint}?campaignId=${testLeadData.Leaddatapayload.campaign.campaignId}`, {
+            data: testLeadData.mandatoryfields
 
-    getallresponsebody.forEach((lead,index) => {
-        expectedfields.forEach(field=>{
-            expect(lead).toHaveProperty(field)
+        });
+        expect(response.status()).toBe(201);
+        const responseBody = await response.json()
+        console.log('lead ID from response ', responseBody.leadId)
+
+        const dbData = await queryDB(
+            'SELECT * FROM lead WHERE lead_id = ?',
+            [responseBody.leadId]   // map API leadId to DB lead_id
+        );
+        console.log("lead id from database", dbData[0].lead_id)
+        expect(responseBody.leadId).toBe(dbData[0].lead_id)
+    })
+
+    //checking manadatory fields for POST requests in data driver loop
+
+    const mandatoryfields = ["name", "company", "industry", "phone", "leadStatus", "leadSource", "campaign"]
+    for (const field of mandatoryfields) {
+        test(`validate Lead's ${field}   is mandatory`, async () => {
+            const payload = getLeadPayload({}, [field])
+
+            const response = await apiContext.post(`${testLeadData.URLs.leadendpoint}?campaignId=${testLeadData.Leaddatapayload.campaign.campaignId}`, {
+                data: payload,
+
+            });
+
+            console.log("Status:", response.status());
+            console.log("Response body:", await response.text());
+
+            expect(response.status()).toBe(400)
         })
-    }); 
-})
-
-//get list wit pagination
-
-test('validate specific page number of leads can be fetched',async()=>{
-
-    const page=2
-    const size=10
-
-    const response= await apiContext.get(`/lead/all?page=${page}&size=${size}`)
-    expect(response.status()).toBe(200)
-
-    const getallresponsebody=await response.json();
-
-    expect(getallresponsebody).toHaveProperty('content')
-    expect(Array.isArray(getallresponsebody.content)).toBe(true)
-
-    const leads=getallresponsebody.content
-    expect(leads.length).toBeLessThanOrEqual(size)
-
-    //validating metadata
-    expect(getallresponsebody).toHaveProperty("totalElements");
-    expect(getallresponsebody).toHaveProperty("totalPages");
-    expect(getallresponsebody).toHaveProperty("last");
-    expect(getallresponsebody).toHaveProperty("size");
-    expect(getallresponsebody).toHaveProperty("number");
-    expect(getallresponsebody).toHaveProperty("numberOfElements");
-    expect(getallresponsebody).toHaveProperty("first");
-    expect(getallresponsebody).toHaveProperty("empty");
-    expect(getallresponsebody).toHaveProperty("pageable");
-
-    expect(getallresponsebody.size).toBe(size);
-    expect(getallresponsebody.number).toBe(page-1);         // here `number` is 1-based in your API
-    expect(getallresponsebody.numberOfElements).toBe(leads.length);
-
-})
-
-test('DeleteLead with  valid lead ID',async()=>{
-    const response=await apiContext.delete(`/lead?leadId=${lead_Id}`)
-        expect(response.status()).toBe(204)
-       
-        const dbData= await queryDB('select * from   lead where lead_id=?',[lead_Id]);
-
-        if (dbData.length === 0) {
-        // hard delete case
-        expect(dbData.length).toBe(0)
-    } else {
-        // soft delete case
-        expect(dbData[0].lead_id).toBeNull()
-        expect(dbData[0].company).toBeNull()
     }
 
+    //validating data for the fields in lead
 
-    
+    const variation_fields = [
+        { field: "name", value: 123, expectedError: "Failed to convert property value" },
+        { field: "company", value: 345, expectedError: "Failed to convert property value" },
+        { field: "leadSource", value: 123, expectedError: "Failed to convert property value" },
+        { field: "industry", value: 567, expectedError: "Failed to convert property value" },
+        { field: "annualRevenue", value: "revenue", type: "long", expectedError: "Cannot deserialize value of type `long`" },
+        { field: "noOfEmployees", value: "emloyeecount", type: "int", expectedError: "Cannot deserialize value of type `long`" },
+        { field: "phone", value: 56778989, expectedError: "Failed to convert property value" },
+        { field: "email", value: 1234, expectedError: "Failed to convert property value" },
+        { field: "secondaryEmail", value: "abc123gmail.com" },
+        { field: "website", value: 12343, expectedError: "Failed to convert property value" },
+        { field: "leadStatus", value: 8999, expectedError: "Failed to convert property value" },
+        { field: "rating", value: "rating", expectedError: "Cannot deserialize value of type `long`" },
+        { field: "assignedTo", value: 3445, expectedError: "Failed to convert property value" },
+        { field: "city", value: 7856, expectedError: "Failed to convert property value" },
+        { field: "country", value: 87678, expectedError: "Failed to convert property value" },
+        { field: "postalCode", value: "postal", type: "int", expectedError: "Cannot deserialize value of type `long`" },
 
+    ]
+
+
+    for (const { field, value, type, expectedError } of variation_fields) {
+        test(`Check lead is created with invalid ${field}`, async () => {
+            const payload = getLeadPayload({ [field]: value });
+
+            const response = await apiContext.post(`${testLeadData.URLs.leadendpoint}?campaignId=${testLeadData.Leaddatapayload.campaign.campaignId}`,
+                { data: payload })
+
+            const responseBody = await response.json()
+            if (type) {
+                expect(responseBody.message).toContain(`Cannot deserialize value of type \`${type}\``);
+            } else {
+                expect(response.message).toContain(expectedError);
+            }
+            expect(responseBody.message).toContain(field)
+
+        })
+
+    }
+
+    test('Check if email already exists for another lead.', async () => {
+        const payload = getLeadPayload({ email: dup_email });
+
+        const response = await apiContext.post(`${testLeadData.URLs.leadendpoint}?campaignId=${testLeadData.Leaddatapayload.campaign.campaignId}`, {
+            data: payload,
+
+        });
+
+        console.log("Status:", response.status());
+        console.log("Response body:", await response.text());
+
+        expect(response.status()).toBe(409)
+    })
+
+
+    test('Check if phone  already exists for another lead.', async () => {
+        const payload = getLeadPayload({ phone: dup_phone });
+
+        const response = await apiContext.post(`${testLeadData.URLs.leadendpoint}?campaignId=${testLeadData.Leaddatapayload.campaign.campaignId}`, {
+            data: payload,
+
+        });
+
+        console.log("Status:", response.status());
+        console.log("Response body:", await response.text());
+
+        expect(response.status()).toBe(409)
+    })
+
+    test('Check if secondaryEmail already exists for another lead.', async () => {
+        const payload = getLeadPayload({ secondaryEmail: dup_secondaryemail });
+
+        const response = await apiContext.post(`${testLeadData.URLs.leadendpoint}?campaignId=${testLeadData.Leaddatapayload.campaign.campaignId}`, {
+            data: payload,
+
+        });
+
+        console.log("Status:", response.status());
+        console.log("Response body:", await response.text());
+
+        expect(response.status()).toBe(409)
+    })
+
+    test('Verify duplicate leads with same Lead Name and company combination is not accepted', async () => {
+        const payload = getLeadPayload({ name: dup_leadname, company: dup_company })
+
+        const response = await apiContext.post(`${testLeadData.URLs.leadendpoint}?campaignId=${testLeadData.Leaddatapayload.campaign.campaignId}`, {
+            data: payload,
+
+        });
+
+        console.log("Status:", response.status());
+        console.log("Response body:", await response.text());
+        expect(response.status()).toBe(409)
+
+    })
+
+    test('provide lead id manually', async () => {
+        const fakeleadid = "gttt1234"
+        const payload = getLeadPayload({ leadId: fakeleadid })
+
+        const response = await apiContext.post(`${testLeadData.URLs.leadendpoint}?campaignId=${testLeadData.Leaddatapayload.campaign.campaignId}`, {
+            data: payload,
+
+        });
+        const responseBody = await response.json()
+        expect(responseBody).not.toBe(fakeleadid)
+
+    })
+
+
+
+    test('Verify annualRevenue defaults to 0 when not provided', async () => {
+        //const payload=getLeadPayload({},"annualRevenue")
+        const payload = { ...testLeadData.Leaddatapayload };
+
+        // remove rating field
+        delete payload.annualRevenue;
+
+
+        const response = await apiContext.post(`${testLeadData.URLs.leadendpoint}?campaignId=${testLeadData.Leaddatapayload.campaign.campaignId}`, {
+            data: payload,
+        });
+
+        const responseBody = await response.json()
+
+        expect(responseBody.annualRevenue).toBe(0)
+        //expect(responseBody.noOfEmployees).toBe(1)
+        //expect(responseBody.rating).toBe(0);
+    })
+
+    test('Verify noOfEmployees defaults to 1 when not provided', async () => {
+
+        const payload = { ...testLeadData.Leaddatapayload };
+
+        // remove noOfEmployees field
+        delete payload.noOfEmployees;
+
+        const response = await apiContext.post(`${testLeadData.URLs.leadendpoint}?campaignId=${testLeadData.Leaddatapayload.campaign.campaignId}`, {
+            data: payload,
+        });
+
+        const responseBody = await response.json()
+
+
+        expect(responseBody.noOfEmployees).toBe(1)
+        //expect(responseBody.rating).toBe(0);
+    })
+
+    test('Verify rating defaults to 0 when not provided', async () => {
+
+        const payload = { ...testLeadData.Leaddatapayload };
+
+        // remove rating field
+        delete payload.rating;
+
+        const response = await apiContext.post(`${testLeadData.URLs.leadendpoint}?campaignId=${testLeadData.Leaddatapayload.campaign.campaignId}`, {
+            data: payload,
+        });
+
+        const responseBody = await response.json()
+        expect(responseBody.rating).toBe(0);
+    })
+
+    test('Verify lead is created with wrong endpoint  valid data in all fields', async () => {
+        const response = await apiContext.post(`${testLeadData.URLs.leadinvalidendpoint}?campaignId=${testLeadData.Leaddatapayload.campaign.campaignId}`, {
+            data: testLeadData.Leaddatapayload,
+        });
+        expect([404, 405]).toContain(response.status())
+    })
+
+    test('Send request with valid data using unsupported HTTP method(GET Request)', async () => {
+        const response = await apiContext.get(`${testLeadData.URLs.leadendpoint}?campaignId=${testLeadData.Leaddatapayload.campaign.campaignId}`, {
+            data: testLeadData.Leaddatapayload
+        });
+        expect([500, 405]).toContain(response.status())
+
+    })
+
+    test('Send request with valid data without authentication', async () => {
+
+        const noAuthContext = await request.newContext({
+            baseURL: testLeadData.URLs.url,
+            extraHTTPHeaders: {
+                'Content-Type': 'application/json'
+            }
+        })
+        const response = await noAuthContext.post(`${testLeadData.URLs.leadendpoint}?campaignId=${testLeadData.Leaddatapayload.campaign.campaignId}`, {
+            data: testLeadData.Leaddatapayload
+        })
+        expect(response.status()).toBe(401)
+    })
+
+    test('verify lead is created with wrong content type', async () => {
+        const invalidContext = await request.newContext({
+            baseURL: testLeadData.URLs.url,
+            extraHTTPHeaders: {
+                'Content-Type': 'text/plain',
+                'Authorization': 'Basic ' + Buffer.from(`${testLeadData.login.username}:${testLeadData.login.password}`).toString('base64')
+            }
+        })
+        const response = await invalidContext.post(`${testLeadData.URLs.leadendpoint}?campaignId=${testLeadData.Leaddatapayload.campaign.campaignId}`, {
+            data: testLeadData.Leaddatapayload
+        })
+        expect([415, 500]).toContain(response.status())
+    })
+
+    test('verify lead is created with invalid url', async () => {
+        const invalidurlapiContext = await request.newContext({
+            baseURL: testLeadData.URLs.invalidurl, // Replace with actual base URL
+            extraHTTPHeaders: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Basic ' + Buffer.from(`${testLeadData.login.username}:${testLeadData.login.password}`).toString('base64') // if API is secured
+            }
+        });
+        const response = await invalidurlapiContext.post(`${testLeadData.URLs.leadendpoint}?campaignId=${testLeadData.Leaddatapayload.campaign.campaignId}`, {
+            data: testLeadData.Leaddatapayload
+        })
+        expect([404, 400]).toContain(response.status())
+    })
+
+    test('Verify API should not accepts all invalid lead Status values', async () => {
+        const payload = getLeadPayload({leadStatus:"old"});
+
+        const response = await apiContext.post(
+            `${testLeadData.URLs.leadendpoint}?campaignId=${testLeadData.Leaddatapayload.campaign.campaignId}`,
+            { data: payload }
+        );
+
+        const responseBody = await response.json();
+
+        const allowedValues = ["New", "Contacted", "Qualified", "Unqualified"];
+
+        // check that responseBody.leadStatus is one of the allowed values
+        expect(allowedValues).toContain(responseBody.leadStatus);
+    })
+
+
+    test.afterAll(async () => {
+        await apiContext.dispose();
+    });
 })
-
-
-test.afterAll(async () => {
-await apiContext.dispose();
-});
-});
 
