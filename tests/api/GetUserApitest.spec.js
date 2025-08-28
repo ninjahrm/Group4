@@ -18,8 +18,23 @@ test('get all users without pagination', async () => {
 
   // Parse JSON response
   const responseBody = await response.json();
+  let flag =0;
+  let expectedProperties = ["empId", "empName", "email", "mobileNo", "username", "dob", "experience", "role", "department", "designation"];
+  if (Array.isArray(responseBody)) {
+  for (const user of responseBody) {
+    for (const prop of expectedProperties) {
+      expect(user).toHaveProperty(prop);
+    }
+    flag=1;
+  }
+  } else {
+    throw new Error("Response body is not an array");
+  }
   const firstTen = responseBody.slice(0, 10);
   console.log(firstTen);
+  if(flag==1){
+    console.log("Property validation success");
+  }
 });
 
 test('get all users with pagination', async () => {
@@ -32,11 +47,23 @@ test('get all users with pagination', async () => {
   const responseBody = await response.json();
  // const firstTen = responseBody.slice(0,10);
   console.log(responseBody);
+  
+  
 });
 
 test('get all users count', async () => {
     const response = await apiContext.get(userPostApiData.URLs.endpointcount);
     expect(response.status()).toBe(200);
+
+  // Parse JSON response
+  const responseBody = await response.json();
+ // const firstTen = responseBody.slice(0, 10);
+  console.log(responseBody);
+});
+
+test('get all users count with wrong endpoint', async () => {
+    const response = await apiContext.get(userPostApiData.URLs.endpointwrong);
+    expect(response.status()).toBe(405);
 
   // Parse JSON response
   const responseBody = await response.json();

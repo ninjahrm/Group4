@@ -2,7 +2,6 @@
   "name": "ninja_hrm_playwright",
   "version": "1.0.0",
   "main": "index.js",
- 
   "scripts": {
     "test": "npx playwright test",
     "campaigntest": "npx playwright test campaignTest.spec",
@@ -40,6 +39,7 @@
   },
   "homepage": "https://github.com/ninjahrm/Group4#readme",
   "dependencies": {
-    "mysql2": "^3.14.3"
+    "mysql2": "^3.14.3",
+    "zod": "^4.1.3"
   }
 }
