@@ -1,6 +1,7 @@
 import { test, expect,request } from '@playwright/test'
-import { userPostApiData,generateUniqueUserData } from '../../testdata/apitestdata/UserData/userPostApiData';
+import { userPostApiData,generateUniqueUserData, userSchema } from '../../testdata/apitestdata/UserData/userPostApiData';
 import { queryDB } from '../../utils/dbUtils';
+import { z } from 'zod';
 //Added by Sashitra - 08/20/2025 Post API Tests
 
 //Before method to set API Context with URI and Headers
@@ -21,18 +22,28 @@ extraHTTPHeaders:userPostApiData.extraHTTPHeaders // Replace with actual base UR
 test('Create new user', async () => {
 
 console.log(userPostApiData.URLs.endpoint);
+console.log(userPostApiData.userCreationData);
 const response = await apiContext.post(userPostApiData.URLs.endpoint,
     {
         data: userPostApiData.userCreationData
     }
 );
 console.log(response.status());
+console.log(response.text());
 
 expect(response.ok()).toBeTruthy(); // checks 2xx status
 const responseBody = await response.json();
 console.log(responseBody);
-
+ try {
+    userSchema.parse(responseBody);
+    console.log('✅ Response schema is valid');
+  } catch (e) {
+    console.error('❌ Schema validation failed:', e.errors);
+    throw e; // Fails the test
+  }
 expect(responseBody.empName).toBe(userPostApiData.userCreationData.empName);
+
+
 
 const dbData = await queryDB('SELECT * FROM employee where emp_name= ?',[responseBody.empName]);
 console.log(dbData[0].emp_id);
@@ -434,6 +445,26 @@ const response = await apiContext.post(userPostApiData.URLs.endpoint,
 console.log(response.status());
 
 expect(response.ok()).toBeFalsy(); // checks 4xx  or 5xx status
+const responseBody = await response.json();
+console.log(responseBody);
+
+
+});
+
+//Test 23 - Create new user with invalid endpoint
+test('Create new user with invalid endpoint', async () => {
+
+console.log(userPostApiData.URLs.endpointwrong);
+ const userData = generateUniqueUserData({ dob: '22/45/0100' });
+const response = await apiContext.post(userPostApiData.URLs.endpointwrong,
+    {
+        data: userData,
+    }
+);
+console.log(response.status());
+
+expect(response.ok()).toBeFalsy(); // checks 4xx  or 5xx status
+expect(response.status()).toBe(405);
 const responseBody = await response.json();
 console.log(responseBody);
 

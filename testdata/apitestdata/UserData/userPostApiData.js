@@ -1,4 +1,19 @@
 import { faker } from '@faker-js/faker';
+import { z } from 'zod';
+
+export const userSchema = z.object({
+  empId: z.string(),
+  empName: z.string(),
+  email: z.string().email(),
+  mobileNo: z.string().regex(/^\d{10}$/),
+  username: z.string(),
+  password: z.string(),
+  dob: z.string().optional(),
+  experience: z.number().int().min(1).max(20),
+  role: z.string(),
+  department: z.string(),
+  designation: z.string(),
+});
 export const userPostApiData ={
     userCreationData: {
         department: faker.commerce.department(),
@@ -26,11 +41,20 @@ export const userPostApiData ={
         endpointget: 'admin/users',
         endpointgetwpag: 'admin/users-paginated',
         endpointcount: 'admin/users-count',
-        endpointdelete: 'admin/user'
+        endpointdelete: 'admin/user',
+        endpointwrong: 'admin/userss'
     },
     extraHTTPHeaders: {
         'Content-Type': "application/json",
         Authorization: "Basic " + Buffer.from("rmgyantra:rmgy@9999").toString("base64")
+    },
+    extraHTTPHeaders1: {
+        'Content-Type': "application/json",
+        Authorization: "Basic " + Buffer.from("Priya123:Priya@123").toString("base64")
+    },
+    extraHTTPHeaders2: {
+        'Content-Type': "application/json",
+        Authorization: "Basic " + Buffer.from("chitra123:chitra123").toString("base64")
     }
 };
 

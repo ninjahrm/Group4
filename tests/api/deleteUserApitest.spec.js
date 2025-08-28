@@ -56,7 +56,24 @@ test('Try deleting the same user again', async () => {
 
   const body = await delResponse1.text();
   console.log('delResponse-status: ', delResponse1.status());
-  console.log('User deleted not success');
+  console.log('User not deleted');
+  console.log(body);
+
+});
+
+test('Try deleting the user with wrong endpoint', async () => {
+  console.log('Attempting to delete user with wrong endpoint:', userId1);
+  console.log(userId1);
+    const delResponse1 = await apiContext.delete(userPostApiData.URLs.endpointwrong,{
+	params: { userId1 } });
+    expect(delResponse1.ok()).toBeFalsy();
+    expect(delResponse1.status()).toBe(405);
+
+  // Parse JSON response
+
+  const body = await delResponse1.text();
+  console.log('delResponse-status: ', delResponse1.status());
+  console.log('User not deleted');
   console.log(body);
 
 });
