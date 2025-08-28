@@ -9,6 +9,8 @@ export const testLeadData = {
     campaignendpoint:'/campaign'
   },
   login: {
+    invalidusername:'nothinguser',
+    invalidpassword:'#$%%%6&',
     username: 'user16_vijay',
     password: '@123456'
   },

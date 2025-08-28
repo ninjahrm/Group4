@@ -149,14 +149,17 @@ test.describe('API Lead tests', () => {
 
             const response = await apiContext.post(`${testLeadData.URLs.leadendpoint}?campaignId=${testLeadData.Leaddatapayload.campaign.campaignId}`,
                 { data: payload })
-
+            console.log("response is",response.status())
             const responseBody = await response.json()
+            expect(responseBody).toHaveProperty("message");
+
             if (type) {
                 expect(responseBody.message).toContain(`Cannot deserialize value of type \`${type}\``);
-            } else {
+            } else if (expectedError) {
                 expect(response.message).toContain(expectedError);
             }
             expect(responseBody.message).toContain(field)
+            expect([400, 500]).toContain(response.status());
 
         })
 
@@ -249,8 +252,7 @@ test.describe('API Lead tests', () => {
         const responseBody = await response.json()
 
         expect(responseBody.annualRevenue).toBe(0)
-        //expect(responseBody.noOfEmployees).toBe(1)
-        //expect(responseBody.rating).toBe(0);
+        
     })
 
     test('Verify noOfEmployees defaults to 1 when not provided', async () => {
@@ -268,7 +270,7 @@ test.describe('API Lead tests', () => {
 
 
         expect(responseBody.noOfEmployees).toBe(1)
-        //expect(responseBody.rating).toBe(0);
+        
     })
 
     test('Verify rating defaults to 0 when not provided', async () => {
