@@ -14,3 +14,21 @@ export function getLeadPayload(overrides = {}, omit = []) {
 
   return payload;
 }
+
+export function getUpdateLeadPayload(leadId, overrides = {}, omit = []) {
+  // start from create payload as base
+  let payload = JSON.parse(JSON.stringify(testLeadData.UpdateLeadpayload));
+
+  // include leadId because update requires it
+  payload.leadId = String(leadId);
+
+  // apply overrides
+  payload = { ...payload, ...overrides };
+
+  // remove fields if needed
+  for (const field of omit) {
+    delete payload[field];
+  }
+
+  return payload;
+}
