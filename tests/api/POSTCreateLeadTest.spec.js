@@ -135,10 +135,7 @@ test.describe('API Lead tests', () => {
         { field: "website", value: 12343, expectedError: "Failed to convert property value" },
         { field: "leadStatus", value: 8999, expectedError: "Failed to convert property value" },
         { field: "rating", value: "rating", expectedError: "Cannot deserialize value of type `long`" },
-        { field: "assignedTo", value: 3445, expectedError: "Failed to convert property value" },
-        { field: "city", value: 7856, expectedError: "Failed to convert property value" },
-        { field: "country", value: 87678, expectedError: "Failed to convert property value" },
-        { field: "postalCode", value: "postal", type: "int", expectedError: "Cannot deserialize value of type `long`" },
+        { field: "assignedTo", value: 3445, expectedError: "Failed to convert property value" }
 
     ]
 

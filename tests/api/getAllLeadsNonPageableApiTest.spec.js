@@ -2,7 +2,7 @@ import { test, expect, request } from '@playwright/test';
 import { testLeadData } from '../../testdata/apitestdata/LeadData/POSTData';
 import { queryDB } from '../../utils/dbUtils';
 
-test.describe('Lead Count Test', () => {
+test.describe('Get all Leads nonpageable  Test', () => {
   let apiContext;
 
   test.beforeAll(async ({ playwright }) => {
@@ -48,4 +48,10 @@ test.describe('Lead Count Test', () => {
     expect(getallresponsebody.numberOfElements).toBe(leads.length);
 
 })
+
+
+
+test.afterAll(async () => {
+    await apiContext.dispose();
+  });
 })
