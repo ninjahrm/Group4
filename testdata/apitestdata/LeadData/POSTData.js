@@ -6,13 +6,18 @@ export const testLeadData = {
     invalidurl:'http://49.249.28.218:8068',
     leadendpoint:'/lead',
     leadinvalidendpoint:'/leadss',
-    campaignendpoint:'/campaign'
+    countendpoint:'/lead/count',
+    campaignendpoint:'/campaign',
+    getallendpoint:'/lead/all-leads',
+    getleadspagingendpoint:'/lead/all',
+    invalidleadid:'lD123445'
   },
   login: {
     invalidusername:'nothinguser',
     invalidpassword:'#$%%%6&',
     username: 'user16_vijay',
     password: '@123456'
+    
   },
 
 Leaddatapayload :{

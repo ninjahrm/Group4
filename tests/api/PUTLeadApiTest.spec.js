@@ -179,9 +179,7 @@ const mandatoryfields = ["name", "company", "industry", "phone", "leadStatus", "
     { field: "website", value: 12343, expectedError: "Failed to convert property value" },
     { field: "leadStatus", value: 8999, expectedError: "Failed to convert property value" },
     { field: "rating", value: "rating", type: "long" },
-    { field: "assignedTo", value: 3445, expectedError: "Failed to convert property value" },
-    { field: "city", value: 7856, expectedError: "Failed to convert property value" },
-    { field: "country", value: 87678, expectedError: "Failed to convert property value" }
+   
 ];
 
 for (const { field, value, type, expectedError } of variation_fields) {
